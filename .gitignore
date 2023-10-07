@@ -1,0 +1,5 @@
+/.installed.cfg
+/.project
+/.pydevproject
+/extends-cache/
+/Pipfile.lock

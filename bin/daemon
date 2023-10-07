@@ -1,0 +1,14 @@
+#!/home/paul/.pyenv/versions/2.7.18/bin/python2.7
+
+import sys
+sys.path[0:0] = [
+  '/home/paul/.buildout/eggs/zc.recipe.egg-1.3.2-py2.7.egg',
+  '/home/paul/.buildout/eggs/collective.recipe.scriptgen-0.2-py2.7.egg',
+  '/home/paul/.buildout/eggs/zc.buildout-2.11.0-py2.7.egg',
+  '/home/paul/.buildout/eggs/setuptools-33.1.1-py2.7.egg',
+  ]
+
+import collective.recipe.scriptgen.ctl
+
+if __name__ == '__main__':
+    sys.exit(collective.recipe.scriptgen.ctl.run(['/home/paul/homework/paintmixer/bin/paster', ['serve', '/home/paul/homework/paintmixer/parts/etc/deploy.ini', '--daemon', '--pid-file=/home/paul/homework/paintmixer/var/daemon.pid', '--log-file=/home/paul/homework/paintmixer/var/log/daemon.log'], []]))

@@ -1,0 +1,68 @@
+body {
+  	background-color: #eee;
+  	padding: 1em 2em;
+}
+
+.MastHead {
+	margin: 0 4em;
+	padding: 1em;
+  	background-color: #fff;	
+  	min-height: 3em;
+}
+
+.ContentArea {
+	margin-left: 4em;
+	margin-right: 4em;
+	padding-bottom: 1em;
+  	background-color: #fff;
+}
+
+.contentview {
+}
+
+.palette {
+	padding:0.25em;
+	float: left;
+	border: 1px solid navy;
+	margin: 1em;
+}
+
+.hidden {
+	visibility: hidden;
+	display: none;
+}
+
+.clear {
+	float: none;
+	clear: both;	
+}
+
+.cmyk {
+	width: 30px; 
+	height:30px;
+	display: inline-block;
+	border: 1px solid black;
+}
+
+fieldset {
+	margin: 0.3em 2em 0em 2em;
+}
+
+.mixes > .content {
+	margin: 0.3em 2em 0em 2em;
+	padding: 1em 1em;
+	background-color: lightgray;
+}
+
+.mix_instructions > fieldset {
+	margin: 0.3em 2em 1em 2em;
+	padding: 1em 1em;
+}
+
+.mix_instructions > fieldset pre {
+	font-size: 11pt;
+}
+	
+.current {
+	border: 2px inset gray;	
+}

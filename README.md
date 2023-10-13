@@ -13,7 +13,7 @@ It will sometimes be impossible to match a target colour from a given palette.  
 
 ## Running PaintMixer
 
-There may already be an instance of PaintMixer running at https://aptrackers.com/paintmixer.  If not, you can install it as follows.
+There may already be an instance of PaintMixer running at [https://aptrackers.com/paintmixer](https://aptrackers.com/paintmixer).  If not, you can install it as follows.
 
 Ensure you have Python 2.7 available, as this program uses it.   An easy way to ensure availability, is by using [pyenv](https://github.com/pyenv/pyenv).
 

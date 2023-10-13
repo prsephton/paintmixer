@@ -130,24 +130,24 @@ class Palette(grok.Model):
             closest = sorted([cmyk.interim(c1, c2, c3) for c1, c2, c3 in self.triples()])[0]
 #            print(closest)
             
+            tdelta = delta
             if not closest.Px or closest_direct.delta < closest.Px.delta:
-                if abs(closest_direct.delta - delta) > 0.05:
-                    colourname = self.next_name()
-                    c = closest_direct.P.as_cmyk(name=colourname, to_mix=closest_direct.mixing())
-                    delta = closest_direct.delta                    
-                    self.add(c)
-                else:
+                colourname = self.next_name()
+                c = closest_direct.P.as_cmyk(name=colourname, to_mix=closest_direct.mixing())
+                delta = closest_direct.delta                    
+                self.add(c)
+                if delta < 0.05 or abs(tdelta - delta) < 0.05:
+                    print(c)
                     break
             else:
-                if abs(closest.Px.delta - delta) > 0.05:
-                    name = self.next_name()
-                    c1 = closest.P1.as_cmyk(name=name, to_mix=closest.mixing())
-                    self.add(c1)
-                    colourname = self.next_name()
-                    c2 = closest.Px.P.as_cmyk(name=colourname, to_mix=closest.Px.mixing(name))
-                    self.add(c2)                                
-                    delta = closest.Px.delta
-                else:
+                name = self.next_name()
+                c1 = closest.P1.as_cmyk(name=name, to_mix=closest.mixing())
+                self.add(c1)
+                colourname = self.next_name()
+                c2 = closest.Px.P.as_cmyk(name=colourname, to_mix=closest.Px.mixing(name))
+                self.add(c2)                                
+                delta = closest.Px.delta
+                if delta < 0.05 or abs(tdelta - delta) < 0.05:
                     break
         return colourname, delta
 

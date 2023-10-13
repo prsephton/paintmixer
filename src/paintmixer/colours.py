@@ -191,7 +191,6 @@ class Projection():
         c1 and c2.
     '''
     delta = 100
-    t = 0
     
     c0 = VECTOR3()
     c1 = VECTOR3()
@@ -209,16 +208,17 @@ class Projection():
         v = c0.subtract(c1)
         # print("direction d=%s" % str(d))
         # print("direction v=%s" % str(v))
-        self.t = v.dot(d)
-        self.P = c1.add(d.multiply(self.t))
-        
-        # print("Point=%s;  t=%.4f" % (str(P), t))
+        t = v.dot(d)
+        self.P = c1.add(d.multiply(t))
+        q = c1.distance(c2)
+        self.m = self.P.distance(c1) / q if q else 0        
         self.delta = c0.distance(self.P)
+        print("Point=%s;  t=%.4f; delta=%.4f" % (str(self.P), self.m, self.delta))
         self.c0, self.c1, self.c2 = c0, c1, c2
 
     def __repr__(self):
         return ("projection({} -> {} -> {})\n   closest={}, t={:.2f}, delta={:.2f}"
-                .format(self.c1, self.c0, self.c2, self.P, self.t, self.delta))
+                .format(self.c1, self.c0, self.c2, self.P, self.m, self.delta))
         
     def __lt__(self, other):
         if self.in_range():
@@ -226,12 +226,12 @@ class Projection():
         return False
     
     def in_range(self):
-        return self.t >= 0 and self.t <= 1
+        return self.m >= 0 and self.m <= 1
 
     def mixing(self, name=None):
         if not self.in_range(): return "Failed to find mixing solution"
         if not name: name = self.c2.name
-        return MixInstruction(self.c1.name, name, self.t)
+        return MixInstruction(self.c1.name, name, self.m)
 
     
 class Interim():
@@ -245,21 +245,27 @@ class Interim():
     P1 = VECTOR3()
 
     delta = 100
-    t0 = 0
-    t1 = 0
     
     Px = None
     
     def __init__(self, c0, c1, c2, c3):
-        ''' Given 3 palette colours c1,c2,c3, c0 is the required colour.
+        ''' Given 3 palette colours c1, c2, c3, c0 is the required colour.
             Determine direction d0 = c1 -> c0, and d1 = c2 -> c3
             Find the closest points P0 and P1 on vectors d0 and d1
             where c1 -> c0 -> P1 and c2 -> P1 -> c3
+            
+            line from c2 to c3  = c2 + ti v1
+            line from c1 to c0  = c1 + tj v0
+            
+            
         '''
 #        print("c1=%s; c2=%s; c3=%s" % (str(c1), str(c2), str(c3)))
         self.c0, self.c1, self.c2, self.c3 = c0, c1, c2, c3
         d0 = c1.direction(c0)        # The direction of v0
         d1 = c2.direction(c3)
+        
+        # v0 = c0.subtract(c1)
+        # v1 = c2.subtract(c3)
         #  v0 = c1 + t0 * d0
         #  v1 = c2 + t1 * d1
         #
@@ -268,34 +274,37 @@ class Interim():
         #  t0 = (c2 - c1) . n1 / (d1 . n1)    : n1 = d1 x n
         #  t1 = (c1 - c2) . n0 / (d1 . n0)    : n0 = d0 x n
         
-        n = d0.cross(d1)               # X1 is the vector perpendicular to both v0 & v1
+        n = d1.cross(d0)               # n is the vector perpendicular to both v0 & v1
         
         n0 = d0.cross(n)
         n1 = d1.cross(n)
 
         d0xn1 = d0.dot(n1)
+        d1xn0 = d1.dot(n0)
 
-        if d0xn1:
-            self.t0 = c2.subtract(c1).dot(n1) / d0xn1
-        else:
-            self.t0 = 0
+        t0 = c2.subtract(c1).dot(n1) / d0xn1 if d0xn1 else 0        
+        self.P0 = c1.add(d0.multiply(t0))    #  c1 -> c0 -> P0
+        q0 = c0.distance(c1)
+        self.m0 =  self.P0.distance(c1) / q0 if q0 else 0 
+    
+        t1 = c1.subtract(c2).dot(n0) / d1xn0 if d1xn0 else 0        
+        self.P1 = c2.add(d1.multiply(t1))    # c2 -> P1 -> c3
+        q1 = c3.distance(c2)
+        self.m1 =  self.P1.distance(c2) / q1 if q1 else 0
         
-        self.P0 = c1.add(d0.multiply(self.t0))    #  c1 -> c0 -> P0
-        if min(self.P0.as_list()) >= 0 and self.t0 > 1:
-            d1xn0 = d1.dot(n0)
-            if d1xn0:
-                self.t1 = c1.subtract(c2).dot(n0) / d1xn0
-                self.P1 = c2.add(d1.multiply(self.t1))    # c2 -> P1 -> c3
-                self.delta = self.P0.distance(self.P1)            
-                self.Px = Projection(c0, c1, self.P1)
-                if not self.Px.in_range() or not self.in_range():
-                    self.Px= None
-            else:
-                self.t1 = 0
+        if min(self.P0.as_list()) >= 0 and min(self.P1.as_list()) >= 0 and self.m0 > 1:
+            self.delta = self.P0.distance(self.P1)
+            self.Px = Projection(c0, c1, self.P1)
+            # print('target %s' % (c0.as_cmyk()))
+            # print("%s -> %s -> %s (%.2f[%.2f])" % (c2.as_cmyk(), self.P1.as_cmyk(), c3.as_cmyk(), self.m1, t1))
+            # print("%s -> %s -> %s (%.2f[%.2f])" % (c1.as_cmyk(), c0.as_cmyk(), self.P0.as_cmyk(), self.m0, t0))
+            # print('  -> projected: %s (delta=%.2f)' % (self.Px.P.as_cmyk(), self.Px.delta))
+            if not self.Px.in_range() or not self.in_range():
+                self.Px= None
 
     def __repr__(self):
-        return ("interim({}->{}->{}) t0={:.2f};\n  Px={}"
-                .format(self.c2, self.P0, self.c3, self.t0, self.Px))
+        return ("interim({}->{}->{}) m0={:.2f};\n  Px={}"
+                .format(self.c2, self.P0, self.c3, self.m0, self.Px))
 
     def __lt__(self, other):
         if self.Px:
@@ -304,11 +313,11 @@ class Interim():
 
     def in_range(self):
         if not self.Px: return False
-        return self.t1 > 0 and self.t1 < 1
+        return self.m1 > 0 and self.m1 < 1
 
     def mixing(self):
         if not self.in_range(): return "Failed to find mixing solution"
-        return MixInstruction(self.c2.name, self.c3.name, self.t1)
+        return MixInstruction(self.c2.name, self.c3.name, self.m1)
 
 
 class CMYK(grok.Model):
@@ -344,11 +353,12 @@ class CMYK(grok.Model):
              
              This method acts on the current colour, and alters its representation.
         '''
-        n = min([self.cyan, self.magenta, self.yellow]) / 100.0
-        self.cyan = int(self.cyan - (100 - self.cyan) * n)
-        self.magenta = int(self.magenta - (100 - self.magenta) * n)
-        self.yellow = int(self.yellow - (100 - self.yellow) * n)
-        self.black += int(n * 100)
+        k = min([100, self.cyan, self.magenta, self.yellow])
+        self.cyan -= k
+        self.magenta -= k
+        self.yellow -= k
+        self.black += k
+        
         return self
         
     def denormalise(self):
@@ -359,12 +369,12 @@ class CMYK(grok.Model):
         c = self.cyan + self.black
         m = self.magenta + self.black
         y = self.yellow + self.black
-             
         '''
+        k = self.black
         if self.black:
-            c = self.cyan + (100-self.cyan) * self.black/100.0
-            m = self.magenta + (100-self.magenta) * self.black/100.0
-            y = self.yellow + (100-self.yellow) * self.black/100.0
+            c = self.cyan + k 
+            m = self.magenta + k
+            y = self.yellow + k
             return CMYK(c,m,y,0,self.name)
         return self
     

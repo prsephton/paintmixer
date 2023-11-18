@@ -60,7 +60,8 @@ class ICMYK(Interface):
     magenta = schema.Int(title=u"Magenta", description=u"The Magenta component of a CMYK colour", min=0, max=100)
     yellow = schema.Int(title=u"Yellow", description=u"The Yellow component of a CMYK colour", min=0, max=100)
     black = schema.Int(title=u"Black", description=u"The Black component of a CMYK colour", min=0, max=100)
-    to_mix = schema.TextLine(title=u"To Mix")
+    to_mix = schema.TextLine(title=u"To Mix", description=u'Instructions to mix this colour')
+    density = schema.Float(title=u"Density", description=u"The colour density to white density ratio", min=0.0, default=1.0)
 
 
 class VECTOR3(grok.Model):
@@ -81,9 +82,9 @@ class VECTOR3(grok.Model):
     def __repr__(self):
         return "{}({:.2f},{:.2f},{:.2f})".format(self.name, self.x, self.y, self.z)
 
-    def as_cmyk(self, name="", to_mix=""):
+    def as_cmyk(self, name="", to_mix="", density=1.0):
         if not name: name = self.name
-        return CMYK(self.x*100.0, self.y*100.0, self.z*100.0, name=name, to_mix=to_mix)
+        return CMYK(self.x*100.0, self.y*100.0, self.z*100.0, name=name, to_mix=to_mix, density=density)
 
     def as_list(self):
         return [self.x, self.y, self.z]
@@ -146,6 +147,7 @@ class VECTOR3(grok.Model):
         else:
             raise ValueError("VECTOR3::divide(ratio) attempted division by zero")    
 
+
 class MixInstruction():
     parts = None
     args = None
@@ -192,11 +194,14 @@ class Projection():
     '''
     delta = 100
     
-    c0 = VECTOR3()
-    c1 = VECTOR3()
-    c2 = VECTOR3()
+    v0 = VECTOR3()
+    v1 = VECTOR3()
+    v2 = VECTOR3()
     
     P = VECTOR3()
+    D = 0.5
+    density = 1.0
+    
 
     def __init__(self, c0, c1, c2):
         ''' Vector c1 and c2 represent two palette colours, and we want to
@@ -204,21 +209,27 @@ class Projection():
             We also want to ensure that this point is not outside the bounds
             of the line.
         '''
-        d = c1.direction(c2)
-        v = c0.subtract(c1)
+        vectors = c0.as_vector3(), c1.as_vector3(), c2.as_vector3()
+        v0, v1, v2 = self.v0, self.v1, self.v2 = vectors
+        
+        d = v1.direction(v2)
+        v = v0.subtract(v1)
         # print("direction d=%s" % str(d))
         # print("direction v=%s" % str(v))
         t = v.dot(d)
-        self.P = c1.add(d.multiply(t))
-        q = c1.distance(c2)
-        self.m = self.P.distance(c1) / q if q else 0        
-        self.delta = c0.distance(self.P)
+        self.P = v1.add(d.multiply(t))
+        q = v1.distance(v2)
+        self.m = self.P.distance(v1) / q if q else 0
+        
+        self.density = c1.density * (1 - self.m) + c2.density * self.m
+        self.D = self.m / self.density if self.density else self.m
+        
+        self.delta = v0.distance(self.P)
         print("Point=%s;  t=%.4f; delta=%.4f" % (str(self.P), self.m, self.delta))
-        self.c0, self.c1, self.c2 = c0, c1, c2
 
     def __repr__(self):
         return ("projection({} -> {} -> {})\n   closest={}, t={:.2f}, delta={:.2f}"
-                .format(self.c1, self.c0, self.c2, self.P, self.m, self.delta))
+                .format(self.v1, self.v0, self.v2, self.P, self.m, self.delta))
         
     def __lt__(self, other):
         if self.in_range():
@@ -230,22 +241,23 @@ class Projection():
 
     def mixing(self, name=None):
         if not self.in_range(): return "Failed to find mixing solution"
-        if not name: name = self.c2.name
-        return MixInstruction(self.c1.name, name, self.m)
+        if not name: name = self.v2.name
+        return MixInstruction(self.v1.name, name, self.D)
 
     
 class Interim():
     
-    c0 = VECTOR3()
-    c1 = VECTOR3()
-    c2 = VECTOR3()
-    c3 = VECTOR3()
+    v0 = VECTOR3()
+    v1 = VECTOR3()
+    v2 = VECTOR3()
+    v3 = VECTOR3()
 
     P0 = VECTOR3()
     P1 = VECTOR3()
 
     delta = 100
-    
+    D = 0.5
+    density = 1.0
     Px = None
     
     def __init__(self, c0, c1, c2, c3):
@@ -260,9 +272,11 @@ class Interim():
             
         '''
 #        print("c1=%s; c2=%s; c3=%s" % (str(c1), str(c2), str(c3)))
-        self.c0, self.c1, self.c2, self.c3 = c0, c1, c2, c3
-        d0 = c1.direction(c0)        # The direction of v0
-        d1 = c2.direction(c3)
+        vectors = c0.as_vector3(), c1.as_vector3(), c2.as_vector3(), c3.as_vector3()
+        v0, v1, v2, v3 = self.v0, self.v1, self.v2, self.v3 = vectors
+        
+        d0 = v1.direction(v0)        # The direction of v0
+        d1 = v2.direction(v3)
         
         # v0 = c0.subtract(c1)
         # v1 = c2.subtract(c3)
@@ -282,19 +296,21 @@ class Interim():
         d0xn1 = d0.dot(n1)
         d1xn0 = d1.dot(n0)
 
-        t0 = c2.subtract(c1).dot(n1) / d0xn1 if d0xn1 else 0        
-        self.P0 = c1.add(d0.multiply(t0))    #  c1 -> c0 -> P0
-        q0 = c0.distance(c1)
-        self.m0 =  self.P0.distance(c1) / q0 if q0 else 0 
+        t0 = v2.subtract(v1).dot(n1) / d0xn1 if d0xn1 else 0        
+        self.P0 = v1.add(d0.multiply(t0))    #  c1 -> c0 -> P0
+        q0 = v0.distance(v1)
+        self.m0 =  self.P0.distance(v1) / q0 if q0 else 0 
     
-        t1 = c1.subtract(c2).dot(n0) / d1xn0 if d1xn0 else 0        
-        self.P1 = c2.add(d1.multiply(t1))    # c2 -> P1 -> c3
-        q1 = c3.distance(c2)
-        self.m1 =  self.P1.distance(c2) / q1 if q1 else 0
+        t1 = v1.subtract(v2).dot(n0) / d1xn0 if d1xn0 else 0        
+        self.P1 = v2.add(d1.multiply(t1))    # c2 -> P1 -> c3
+        q1 = v3.distance(v2)
+        self.m1 =  self.P1.distance(v2) / q1 if q1 else 0
         
         if min(self.P0.as_list()) >= 0 and min(self.P1.as_list()) >= 0 and self.m0 > 1:
             self.delta = self.P0.distance(self.P1)
-            self.Px = Projection(c0, c1, self.P1)
+            self.density = c2.density * (1 - self.m1) + c3.density * self.m1
+            self.D = self.m1 / self.density if self.density else self.m1
+            self.Px = Projection(c0, c1, self.P1.as_cmyk(self.P1.name, "", density=self.density))
             # print('target %s' % (c0.as_cmyk()))
             # print("%s -> %s -> %s (%.2f[%.2f])" % (c2.as_cmyk(), self.P1.as_cmyk(), c3.as_cmyk(), self.m1, t1))
             # print("%s -> %s -> %s (%.2f[%.2f])" % (c1.as_cmyk(), c0.as_cmyk(), self.P0.as_cmyk(), self.m0, t0))
@@ -304,7 +320,7 @@ class Interim():
 
     def __repr__(self):
         return ("interim({}->{}->{}) m0={:.2f};\n  Px={}"
-                .format(self.c2, self.P0, self.c3, self.m0, self.Px))
+                .format(self.v2, self.P0, self.v3, self.m0, self.Px))
 
     def __lt__(self, other):
         if self.Px:
@@ -317,8 +333,16 @@ class Interim():
 
     def mixing(self):
         if not self.in_range(): return "Failed to find mixing solution"
-        return MixInstruction(self.c2.name, self.c3.name, self.m1)
+        return MixInstruction(self.v2.name, self.v3.name, self.D)
 
+# class CMYK_dict(grok.Adapter):
+#     grok.adapts(ICMYK)
+#     grok.provides(IDICT)
+#
+#     def __new__(cls, cmyk):
+#         return dict(c=cmyk.cyan, m=cmyk.magenta, y=cmyk.yellow, k=cmyk.black,
+#                     name=cmyk.name, mix=cmyk.to_mix.as_list() if cmyk.to_mix else [],
+#                     density=cmyk.density)
 
 class CMYK(grok.Model):
     """  Represents a CMYK colour.   Several methods provide for conversion
@@ -332,14 +356,16 @@ class CMYK(grok.Model):
     yellow = 0
     black = 0
     to_mix = ""
+    density = 1.0
     
-    def __init__(self, c=0,m=0,y=0,k=0, name="", to_mix=None):
+    def __init__(self, c=0,m=0,y=0,k=0, name="", to_mix=None, density=1.0):
         self.name = name
         self.cyan = int(c)
         self.magenta = int(m)
         self.yellow = int(y)
         self.black = int(k)
         self.to_mix = to_mix or ""
+        self.density = density
         
     def __repr__(self):
         return "{}({},{},{},{})".format(self.name, int(self.cyan), int(self.magenta), int(self.yellow), int(self.black))
@@ -457,17 +483,16 @@ class CMYK(grok.Model):
                 if c is a colour component,
                  - more than 100% coverage is not possible.
                  - adding n parts of a component having c=50% is equivalent to adding n/2 parts of c=100%
-                 - adding 1 part to a mix having 2 parts is the same as adding 1/5 part to a mix having 1 part
-                 
-                
+                 - adding 1 part to a mix having 2 parts is the same as adding 1/5 part to a mix having 1 part                 
         """
         if type(cmyk) is CMYK:
             c1 = self.cmylist()
             c2 = cmyk.cmylist()
             if parts:
-                total = 1 + parts
-                c, m, y = [(a + b*parts)/total for a,b in zip(c1, c2)]
-                return CMYK(c,m,y,0)
+                total = self.density + parts*cmyk.density
+                c, m, y = [(a*self.density + b*parts*cmyk.density)/total for a,b in zip(c1, c2)]
+                density = (self.density + cmyk.density * parts) / total
+                return CMYK(c,m,y,0,density)
             else:
                 return cmyk
         else:
@@ -512,7 +537,9 @@ class CMYK(grok.Model):
             We also want to ensure that this point is not outside the bounds
             of the line.
         '''
-        return Projection(self.as_vector3(), c1.as_vector3(), c2.as_vector3())
+        prj = Projection(self, c1, c2)
+        
+        return prj
 
     def interim(self, c1, c2, c3):
         ''' Given 3 palette colours c1,c2,c3, c0 is the current colour (self).
@@ -520,5 +547,5 @@ class CMYK(grok.Model):
             Find the closest points P0 and P1 on vectors d0 and d1
             where c1 -> c0 -> P1 and c2 -> P1 -> c3
         '''
-        return Interim(self.as_vector3(), c1.as_vector3(), c2.as_vector3(), c3.as_vector3())
+        return Interim(self, c1, c2, c3)
         

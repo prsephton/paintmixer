@@ -57,8 +57,30 @@ class Index(grok.View):
         resource.tooltips.need()
         resource.htmx.need()
         resource.jquery.need()
+        resource.favicon.need()
         resource.mixview.need()
 
+class Calibration(grok.View):
+    grok.template("index")
+    max_samples = 10
+    
+    def scale_items(self, i):
+        base = self.palette.colours[i]
+        white = self.palette.colours[self.is_white]
+        return [base.mix(white, n/5.0) if n else base for n in range(self.max_samples+1)]
+    
+    def update(self, palette=None, current=None, palette_name='Default'):        
+        self.palette = self.context.palette if palette is None else Palette().fromtext(palette)
+        self.current = current if current is not None else 0
+        location.location.located(self.palette, self.context, 'palette')
+        self.palette_name = palette_name
+        self.is_white = self.palette.find_white()
+        resource.style.need()
+        resource.tooltips.need()
+        resource.htmx.need()
+        resource.jquery.need()
+        resource.favicon.need()
+        resource.mixview.need()
 
 class MastHead(grok.ViewletManager):
     grok.context(IApplication)
@@ -92,6 +114,14 @@ class ContentViewlet(grok.Viewlet):
     ''' Render layout masthead
     '''
     grok.context(IApplication)
+    grok.view(Index)
+    grok.viewletmanager(Content)
+
+class CalibrationViewlet(grok.Viewlet):
+    ''' Calibrate the current palette
+    '''
+    grok.context(IApplication)
+    grok.view(Calibration)
     grok.viewletmanager(Content)
 
 class FooterViewlet(grok.Viewlet):

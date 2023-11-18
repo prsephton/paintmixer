@@ -43,6 +43,47 @@ class Palette(grok.Model):
         except Exception:
             return -1
 
+    def find_white(self):
+        ''' return an index into the palette for the colour most likely to be white
+        '''
+        compare = list(enumerate([sum(c.cmylist()) for c in self.colours]))
+        compare.sort(key=lambda x: x[1])
+        return compare[0][0]
+
+    def calibrate(self, cdata):
+        ''' Calibrate the palette, altering the relative density of each colour.
+            <cdata> contains calibration data for all palette colours other than white.
+            White is treated as the reference colour.
+            For each colour:
+                Calibration presents shades of the colour by mixing white in the following ratios:
+                   1:0, 1:0.2, 1:0.4, 1:0.6, 1:0.8, 1:1, 1:1.2, 1:1.4, 1:1.6, 1:1.8, 1:2
+                The user mixes in white in a 1:1 ratio, and compares to the above scale.
+                If the colour and white have equal pigment density, we expect the user to select 1:1
+                If the user selects < 1:1, then white is denser than the colour, and vica verse
+                
+            We assume White as reference has a density of 1.
+            
+            The user chooses a ratio 1/0.6.  This means that we would need more of our colour vs. white.
+            To calibrate this colour, we calculate it's density as (old_density * 1.667).  The next time 
+            the scale is displayed (using the new density) the 1:1 point will correspond to the 
+            correct mix.
+            
+            If the 1:0 point is selected, we assume that the user wants to reset the density to 1.0            
+        '''
+        white = self.find_white()
+        reference = [5.0/(n+1) for n in range(10)]
+        for i, c in enumerate(self.colours):
+            if i == white:
+                c.density = 1.0
+                continue
+            ofs = cdata.pop(0)
+            if ofs:
+                ratio = reference[ofs-1]
+                c.density *= ratio
+            else:
+                c.density = 1.0
+            print("Density of %s(%s) is %s" % (c.name, ofs, c.density))
+
     def pairs(self):
         return [(a, b) for idx, a in enumerate(self.colours) for b in self.colours[idx + 1:]]
         
@@ -53,7 +94,7 @@ class Palette(grok.Model):
                  for c in self.colours[i + j + 2:]]
         tlist = [list(permutations(e))[::2] for e in tlist]
         return reduce(lambda a, b: a + b, tlist, [])
-        
+
     def add(self, cmyk):
         """ Add a colour to the current palette """
         self.colours.append(cmyk.denormalise().normalise())
@@ -66,39 +107,22 @@ class Palette(grok.Model):
 
     def astext(self):
         """ Dump the palette to a JSON string """
-        clist = [[c.cyan, c.magenta, c.yellow, c.black, c.name, c.to_mix.as_list() if c.to_mix else []] 
+        clist = [[c.cyan, c.magenta, c.yellow, c.black, c.name, c.to_mix.as_list() if c.to_mix else [], c.density] 
                  for c in self.colours]
         return json.dumps(clist)
-    
+
     def fromtext(self, text):
         """ Read the palette from a JSON string """
         clist = json.loads(text)
-        self.colours = [CMYK(cyan, magenta, yellow, black, name, MixInstruction(*to_mix) if to_mix else None)
-                        for [cyan, magenta, yellow, black, name, to_mix] in clist]
+        if clist:
+            if len(clist[0]) == 7:
+                self.colours = [CMYK(cyan, magenta, yellow, black, name, MixInstruction(*to_mix) if to_mix else None, density)
+                                for [cyan, magenta, yellow, black, name, to_mix, density] in clist]
+            elif len(clist[0]) == 6:
+                self.colours = [CMYK(cyan, magenta, yellow, black, name, MixInstruction(*to_mix) if to_mix else None)
+                                for [cyan, magenta, yellow, black, name, to_mix] in clist]
         return self
-
-    # def mix(self, mixes):
-    #     current = self.colours[self.find('white')]
-    #     cparts = 0
-    #     for parts, cname in mixes:
-    #         c = self.colours[self.find(cname)]
-    #         current = current.mix(c, cparts, parts)
-    #         cparts += parts
-    #     return current
-    #
-    # def gradients(self, target):
-    #     sel = [c.cmylist() for c in self.colours] 
-    #     t = target.cmylist()
-    #
-    #     mx = [(m-c, y-m) for c,m,y in sel]   # gradients
-    #     mz = (t[1]-t[0], t[2]-t[1])       # target gradients
-    #
-    #     mzx = [[x - y for x, y in zip(xsel, mz)] for xsel in mx]
-    #     ssq = [sum([mc*mc, ym*ym])/2 for mc, ym in mzx]
-    #     grad = [math.sqrt(sq)/100 if sq>0 else 0 for sq in ssq]             # gradient match
-    #
-    #     return grad
-    
+   
     def distance(self, target):
         sel = [c.cmylist() for c in self.colours] 
         t = target.cmylist()
@@ -133,7 +157,8 @@ class Palette(grok.Model):
             tdelta = delta
             if not closest.Px or closest_direct.delta < closest.Px.delta:
                 colourname = self.next_name()
-                c = closest_direct.P.as_cmyk(name=colourname, to_mix=closest_direct.mixing())
+                to_mix = closest_direct.mixing()
+                c = closest_direct.P.as_cmyk(name=colourname, to_mix=to_mix, density=closest_direct.density)
                 delta = closest_direct.delta                    
                 self.add(c)
                 if delta < 0.05 or abs(tdelta - delta) < 0.05:
@@ -141,10 +166,10 @@ class Palette(grok.Model):
                     break
             else:
                 name = self.next_name()
-                c1 = closest.P1.as_cmyk(name=name, to_mix=closest.mixing())
+                c1 = closest.P1.as_cmyk(name=name, to_mix=closest.mixing(), density=closest.density)
                 self.add(c1)
                 colourname = self.next_name()
-                c2 = closest.Px.P.as_cmyk(name=colourname, to_mix=closest.Px.mixing(name))
+                c2 = closest.Px.P.as_cmyk(name=colourname, to_mix=closest.Px.mixing(name), density=closest.Px.density)
                 self.add(c2)                                
                 delta = closest.Px.delta
                 if delta < 0.05 or abs(tdelta - delta) < 0.05:
@@ -206,12 +231,17 @@ class MixInstructionForm(grok.View):
 
 class ProcessColour(grok.View):
     
-    def update(self, palette, bn_add=None, bn_remove=None, bn_reset=None, bn_mix=None, 
+    def update(self, palette, bn_calibrate=None, bn_add=None, bn_remove=None, bn_reset=None, bn_mix=None, 
                current=0, colourname='', cyan=None, magenta=None, yellow=None, black=None,
                mixes=None, grams=10, palette_name='Default', delta=0, target=""):
         
         if not mixes: mixes = ""        
-        if bn_reset:
+        if bn_calibrate:
+            self.redirect(self.url(self.context.__parent__, name='calibration', 
+                                   data={'palette': palette, 'current': current,
+                                         'mixes': mixes, 'grams': grams, 'palette_name': palette_name,
+                                         'delta': delta, 'target': target}))
+        elif bn_reset:
             self.redirect(self.url(self.context.__parent__, name='', data=dict(reset=True)))
         else:
             self.context.fromtext(palette)
@@ -243,3 +273,25 @@ class ProcessColour(grok.View):
 
     def render(self):
         return self.context
+
+
+
+class Calibrate(grok.View):
+    
+    def update(self, palette, bn_calibrate=None, 
+               current=0, palette_name='Default', delta=0, target="",
+               mixes=None, grams=10):
+        if not mixes: mixes = ""   
+        self.context.fromtext(palette)
+        if bn_calibrate:
+            cdata = [int(self.request.form["match_%i" % (i+1)])-1 for i in range(len(self.context.colours)-1)]
+            self.context.calibrate(cdata)
+        
+        self.redirect(self.url(self.context.__parent__, name='index', 
+                               data={'palette': self.context.astext(), 'current': current,
+                                     'mixes': mixes, 'grams': grams, 'palette_name': palette_name,
+                                     'delta': delta, 'target': target}))
+
+    def render(self):
+        return self.context
+

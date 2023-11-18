@@ -1,7 +1,8 @@
 <div class="contentview">
 
   <div id="reset" class="hidden" tal:condition="view.reset">Resetting</div>
-  <div class="palette">
+  <div class="left"><h2>Palette</h2></div>
+  <div class="palette left">
 	  <div tal:omit-tag="" tal:repeat="c view.palette.colours">
  		 <div class="tooltip" style="display:inline-block">
 	        <div tal:condition="view.current == repeat.c.index" class="cmyk current" tal:attributes="style string:background-color: ${c.rgbstring()}; index repeat.c.index"></div>
@@ -9,6 +10,7 @@
 		    <span class="tooltiptext" tal:content="structure string:${c.name}<br /> ${c.to_mix}"></span>
 		    <span class="name_text hidden" tal:content="c.name"></span>
 		    <span class="mix_text hidden" tal:content="c.to_mix"></span>
+		    <span class="density_text hidden" tal:content="c.density"></span>
 	  	</div>
 	  </div>
   </div>
@@ -26,6 +28,7 @@
 	      <input type="submit" class="button" name="bn_save_palette" value="Save" />
 	      <input type="submit" class="button" name="bn_forget_palette" value="Forget" />
 	      <input type="button" class="button" id="bn_clear_palette" value="Clear" />
+	      <input type="submit" class="button" name="bn_calibrate" value="Calibrate" />
 	  </fieldset>
       <fieldset>
 		  <label for="colour">Colour: </label><input type="color" name="colour" tal:attributes="value view.colour.to_rgb().hex()" />

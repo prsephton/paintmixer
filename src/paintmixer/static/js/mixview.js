@@ -149,6 +149,16 @@ function forget_palette() {
 }
 
 $(document).ready(function(){
+    $('div.scale-element').on('click', function(e){
+    	index = parseInt($(this).attr('index'));
+    	$(this).siblings().each(function(){
+			$(this).removeClass('current');
+			$('input', this).val(String(index+1));
+		});
+		$(this).addClass('current');
+    	$(this).siblings().last();				
+	});
+	
     $('div.cmyk').on('click', function(e){
     	index = $(this).attr('index');
     	rgb = $(this).css('background-color');

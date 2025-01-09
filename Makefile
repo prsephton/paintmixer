@@ -2,7 +2,7 @@
 ##   The following rules are available:
 ##	help     		- This text
 ##	develop			- Run the container in development mode
-##	production		- Run the container in production mode
+##	run				- Run the container in production mode
 ##	buildout		- Run the internal grok installer/configuration (buildout) 
 ##	runtime    		- Creates a persistent server runtime environment
 ##	password    	- Prompts for user information, and generates xml that describes a user

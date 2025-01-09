@@ -25,12 +25,13 @@ First install the application with a chosen name (eg. "pm").  Then navigate to t
 
 ## Features
 
- * Unlimited number of palettes
- * Calculates interim colours along a path to the target
+ * Unlimited number of palettes.
+ * Calculates interim colours along a path to the target.
  * Produces a mixing recipe for a desired quantity with amounts of constituent colours by weight.
+ * Calibration of your palette pigments via a well described and simple to use procedure will vastly improve results.
 
 ## Notes
 
- * This project now uses Python 3.13
- * The code uses the **grok** application server
- * Paintmixer is free for use under the GPL v3
+ * This project now uses Python 3.13.
+ * The code uses the **grok** application server.
+ * Paintmixer is free for use under the GPL v3.

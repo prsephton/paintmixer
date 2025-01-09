@@ -13,34 +13,14 @@ It will sometimes be impossible to match a target colour from a given palette.  
 
 ## Running PaintMixer
 
-There may already be an instance of PaintMixer running at [https://aptrackers.com/paintmixer](https://aptrackers.com/paintmixer).  If not, you can install it as follows.
+This project is now based on the docker container at https://hub.docker.com/r/prsephton/grokserver.  Therefore, to run the server, you will need
+docker installed.
 
-Ensure you have Python 2.7 available, as this program uses it.   An easy way to ensure availability, is by using [pyenv](https://github.com/pyenv/pyenv).
+After installing docker, clone the repo, and from the base folder, type "make run".   You will be prompted for a super user name and password.
 
-We also need [pipenv](https://pipenv.pypa.io/en/latest/) for installation.  If you don't yet have pipenv, 
+The application server will be available by default on [localhost http port 8080](http://localhost:8080).
 
-	pip install pipenv
-
-Then, from the base folder of this project, 
-
-	pipenv install
-
-This installs [buildout](https://www.buildout.org/en/latest/) which we use for the rest of the installation, and sets up a virtual environment for the project.  After everything is done, type
-
-	pipenv shell
-	buildout bootstrap
-	bin/buildout
-	
-There should be a lot of packages installed at this point.  When completed, run zpasswd to assign a system password to the app server:
-
-	bin/zpasswd
-
-Then start the application server on the default port 8080 with:
-
-	bin/paster serve --reload parts/etc/deploy.ini
-
-Point your browser at http://localhost:8080 and add an instance of the PaintMixer application to the app server.  You can then
-follow the link you have just created to access the application.
+First install the application with a chosen name (eg. "pm").  Then navigate to the installed app by clicking the link.
 
 
 ## Features
@@ -51,6 +31,6 @@ follow the link you have just created to access the application.
 
 ## Notes
 
- * This project uses Python 2.7
+ * This project now uses Python 3.13
  * The code uses the **grok** application server
  * Paintmixer is free for use under the GPL v3

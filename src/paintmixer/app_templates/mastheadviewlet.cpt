@@ -1,5 +1,0 @@
-<div class="masthead">
-	<img class="left" tal:attributes="src static['paint-can.png']; width string:96px" >
-	<h1 class="left">Paint Mixer</h1>
-	<div class="clear"></div>
-</div>

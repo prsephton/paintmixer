@@ -1,0 +1,22 @@
+#!/bin/bash
+
+DIR=`dirname $(realpath $0)`
+
+function running() {
+	docker ps | grep 'gserver$' > /dev/null 2>&1
+}
+
+if running ; then
+	docker exec gserver pipenv run buildout
+else
+	cd $DIR/../runtime
+	docker run --rm --name gserver \
+		-v ./var:/opt/gserver/var \
+		-v ./parts:/opt/gserver/parts \
+		-v ./src:/opt/gserver/src \
+		-v ./setup.py:/opt/gserver/setup.py \
+		-v ./buildout.cfg:/opt/gserver/buildout.cfg \
+		prsephton/grokserver:1 buildout
+fi
+
+exit 0

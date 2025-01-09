@@ -1,0 +1,15 @@
+Metadata-Version: 2.2
+Name: paintmixer
+Version: 0.0
+Home-page: 
+Author: 
+Author-email: 
+Requires-Dist: setuptools
+Requires-Dist: grok
+Requires-Dist: grokui.admin
+Requires-Dist: fanstatic
+Requires-Dist: zope.fanstatic
+Requires-Dist: grokcore.chameleon
+Requires-Dist: grokcore.startup
+Dynamic: keywords
+Dynamic: requires-dist

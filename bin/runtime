@@ -1,0 +1,84 @@
+#!/bin/bash
+DIR=`dirname $(realpath $0)`
+VERSION=`cat $DIR/../version`
+echo using version grokserver:$VERSION
+ODIR=`pwd`
+cd $DIR/..
+
+function running() {
+	docker ps | grep 'gserver$' > /dev/null 2>&1
+}
+
+function prep_container() {
+	if running; then
+		echo "stopping running container"
+		docker stop gserver
+	fi 
+    docker run --rm --name gserver prsephton/grokserver:$VERSION deploy > /dev/null 2>&1 &
+    if [ ! "$?" ]; then
+    	echo "Container background execution failed"
+    	exit 1
+    fi
+    while ! running; do
+    	sleep 1
+    done	
+}
+
+function stop_container() {
+    docker stop gserver
+    JOBS=`jobs -p`
+    if [ -n "$JOBS" ]; then
+        kill -TERM $JOBS
+        wait $JOBS 
+    fi	
+}
+
+mkdir -p runtime && cd runtime
+if [ ! -d "var" -o ! -d "parts" ]; then 
+    T=`tempfile`
+    if ! prep_container; then
+    	exit 0
+    fi
+    read -p "Please enter a user name for the admin account: " username
+    read -p "Please enter the password for the admin account: " password
+
+    if [ ! -d "../src" ]; then
+    	docker cp gserver:/opt/gserver/src ../src
+    fi   
+    ln -s ../src .
+    sitename=`basename src/*`
+    echo "Using package name [$sitename] in configuration"
+    
+    docker cp $DIR/ssha_gen_auth.py gserver:/opt/gserver/bin/
+    docker exec gserver bin/python-console bin/ssha_gen_auth.py -u "$username" -p "$password" -s "$sitename"
+    
+    echo "Running Buildout..."
+	$DIR/buildout
+    
+    echo "Creating runtime..."
+    docker cp gserver:/opt/gserver/var var 
+    docker cp gserver:/opt/gserver/parts parts 
+    docker cp gserver:/opt/gserver/extends-cache extends-cache 
+    if [ ! -f "../setup.py" ]; then
+        docker cp gserver:/opt/gserver/etc/setup.py.in $T && envsubst < $T > ../setup.py 
+    fi
+    rm $T    
+    ln -s ../setup.py .
+    
+    if [ ! -f "../buildout.cfg" ]; then
+        docker cp gserver:/opt/gserver/etc/buildout.cfg.in $T && envsubst < $T > ../buildout.cfg     
+    fi
+    rm $T    
+    ln -s ../buildout.cfg .
+    stop_container    
+elif [ ! -f "parts/etc/site.zcml" ]; then 
+    if ! prep_container; then
+    	exit 0
+    fi
+    docker cp gserver:/opt/gserver/parts/etc/site.zcml parts/etc/site.zcml 	
+    stop_container
+    echo "Running Buildout..."
+    $DIR/buildout
+fi
+cd $ODIR
+exit 0

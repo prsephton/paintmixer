@@ -1,0 +1,25 @@
+#!/bin/bash
+
+DIR=`dirname $(realpath $0)`
+
+function running() {
+	docker ps | grep 'gserver$' > /dev/null 2>&1
+}
+
+if running ; then
+	docker exec -it gserver /opt/gserver/bin/zpasswd
+else
+	$DIR/run production &
+	while ! running; do
+		sleep 1
+	done
+	docker exec -it gserver /opt/gserver/bin/zpasswd
+	docker stop gserver
+    JOBS=`jobs -p`
+    if [ -n "$JOBS" ]; then
+        kill -TERM $JOBS
+        wait $JOBS 
+    fi
+fi
+
+exit 0

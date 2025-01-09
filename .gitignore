@@ -3,3 +3,5 @@
 /.pydevproject
 /extends-cache/
 /Pipfile.lock
+/runtime
+*.swp

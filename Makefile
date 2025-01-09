@@ -22,7 +22,7 @@ runtime:
 develop: runtime
 	bin/run debug
 
-production: runtime
+run: runtime
 	bin/run deploy
 
 buildout:

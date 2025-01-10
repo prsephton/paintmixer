@@ -54,7 +54,7 @@ A reasonable way of determining the actual colour of a given paint, is to paint 
 photograph with your phone.  Depending on lighting conditions, you should be able to use Google to match the colour.  You can ask Google what
 the RGB or CMYK values (or even the name) are of the paint.
 
-Another approach is to match the painted sample against a standard such as Pantone &trade;.  Pantone:tm: provide painted strips of various hues, 
+Another approach is to match the painted sample against a standard such as Pantone&trade;.  Pantone&trade; provide painted strips of various hues, 
 shades and tints to allow for visual matching of samples to known CMYK values.
 
 Once you have the CMYK (preferred) or RGB values for your paint, add it to the current palette by 

@@ -143,7 +143,7 @@ In the reflective colour model, this means that
 the same for the magenta wavelength.  There is also an 80% reflection for all colours in the spectrum.  
 
 The resulting colur will be a 
-<div style="background-color:rgba(0, 0, 0, 0.0470588); text-align:center; vertical-align: middle; padding:40px 0;">lavender blue (R: 229, G: 229, B: 255 or #e5e5ff)</div>.
+<span style="background-color:#e5e5ff; text-align:center; vertical-align: middle; padding:40px 0;">lavender blue (R: 229, G: 229, B: 255 or #e5e5ff)</span>.
 
 Remember that this assumes equal pigment strengths, and that cyan and magenta pigments are the perfect primaries.  Nevertheless, it 
 should be plain that the program is producing the appropriate instructions, given these rather idealistic conditions.  Things 

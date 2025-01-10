@@ -80,7 +80,7 @@ There is no universal guideline that will tell us exactly how much of one colour
 affect.  It depends completely on the type of paint and manufacturer.  That is why it is a very hard thing to learn to do 
 under ordinary circumstance.
 
-Our paintmixer program provides a process whereby one may determine the relative strengths of each pigment, so that it knows
+Our PaintMixer program provides a process whereby one may determine the relative strengths of each pigment, so that it knows
 with reasonable preciseness how much paint to add to another to achieve a target colour.  It does this by comparing the 
 strength of each pigment to a common known pigment (white).
 
@@ -135,14 +135,14 @@ Now add a value of 10% Magenta, and hit "Mix" again.  This time, the program pro
 
 ```
 
-The program is saying to first mix 1 gram of cyan and 1 gram of magenta.  Then mix those 2 grams with anothert 8 grams of white
+The program is saying to first mix 1 gram of cyan and 1 gram of magenta.  Then mix those 2 grams with another 8 grams of white
 to produce 10 grams of final mixture, with 80% white, 10% cyan and 10% magenta.  
 
 In the reflective colour model, this means that 
 90% of incoming white light cyan wavelength will be reflected (80% white includes all colours including cyan + 10% cyan = 90%), and 
-the same for the magenta wavelength.  There is also an 80% reflection for all colours in the spectrum.  
+the same for the magenta wavelength.  There is also an 80% reflection for all colours in the illumination spectrum.
 
-The resulting colour will be a lavender blue (R: 229, G: 229, B: 255 or #e5e5ff).
+The resulting colour should be a lavender blue (R: 229, G: 229, B: 255 or #e5e5ff).
 
 Remember that this assumes equal pigment strengths, and that cyan and magenta pigments are the perfect primaries.  Nevertheless, it 
 should be plain that the program is producing the appropriate instructions, given these rather idealistic conditions.  Things 
@@ -160,4 +160,4 @@ become a lot more messy in the real world.
 
  * This project now uses Python 3.13.
  * The code uses the **grok** application server.
- * Paintmixer is free for use under the GPL v3.
+ * PaintMixer is free for use under the LGPL v3.

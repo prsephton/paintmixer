@@ -142,8 +142,10 @@ In the reflective colour model, this means that
 90% of incoming white light cyan wavelength will be reflected (80% white includes all colours including cyan + 10% cyan = 90%), and 
 the same for the magenta wavelength.  There is also an 80% reflection for all colours in the spectrum.  
 
-The resulting colur will be a 
-<span style="background-color:#e5e5ff; text-align:center; vertical-align: middle; padding:40px 0;">lavender blue (R: 229, G: 229, B: 255 or #e5e5ff)</span>.
+The resulting colour will be a 
+<span style="background-color:#e5e5ff; text-align:center; vertical-align: middle; padding:40px 0; display: inline-block">
+lavender blue (R: 229, G: 229, B: 255 or #e5e5ff)
+</span>.
 
 Remember that this assumes equal pigment strengths, and that cyan and magenta pigments are the perfect primaries.  Nevertheless, it 
 should be plain that the program is producing the appropriate instructions, given these rather idealistic conditions.  Things 

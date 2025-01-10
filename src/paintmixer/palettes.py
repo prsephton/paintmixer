@@ -238,9 +238,7 @@ class ProcessColour(grok.View):
         if not mixes: mixes = ""        
         if bn_calibrate:
             self.redirect(self.url(self.context.__parent__, name='calibration', 
-                                   data={'palette': palette, 'current': current,
-                                         'mixes': mixes, 'grams': grams, 'palette_name': palette_name,
-                                         'delta': delta, 'target': target}))
+                                   data={'palette': palette, 'current': current, 'palette_name': palette_name}))
         elif bn_reset:
             self.redirect(self.url(self.context.__parent__, name='', data=dict(reset=True)))
         else:

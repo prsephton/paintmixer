@@ -10,17 +10,22 @@
 		<h2>Instructions</h2>
 		<dl>
 			<dt>1. Preparing samples.</dt>
-			<dd>For each of the colours below, mix an equal <strong><em>weight</em></strong> of white with the colour.  </dd>
-			<dd>Paint some of the mixture on white paper, and label each sample with the colour used.</dd>
-			<dd>You only ever need to do this once for a new pigment, unless white changes.</dd>
+			<dd>For each of the pigments in your palette, mix an equal <strong><em>weight</em></strong> of white with the colour.  </dd>
+			<dd>Paint some of the mixture on white paper, and label each sample with the pigment used.</dd>
+			<dd><em>You only ever need to do this <strong>once</strong> for a new pigment, unless white changes</em>.</dd>
+			<dd>Wait for the paint to dry.</dd>
 			<dt>2. Comparing samples to your palette.</dt>
-			<dd>Print this page in colour, and compare the mixed colour with the scale given against each colour.</dd>
+			<dd>Print this page in colour, and match the samples from step 1 with the scale provided against each palette colour.</dd>
+			<dd>Do not use the on-screen display for this step, as emissive colours from a monitor cannot be compared to reflective paints.</dd> 
 			<dt>3. Entering calibration data.</dt>
-			<dd>Select and enter the value for the closest match in the box at the end of each row.</dd>
-			<dd>To <strong><em>reset</em></strong> calibration data, select column #1 for the colour to be reset.</dd>
-			<dt>4. Calibrate your palette!</dt>			
-			<dd>Once all of the colours have been matched, hit <strong>"Calibrate"</strong>.</dd>
-			<dd>Repeating the calibration as necessary will improve accuracy</dd>
+			<dd>Select and enter each corresponding value for the closest match in the box at the end of each row.</dd>
+			<dd>If you want to <strong><em>reset</em></strong> calibration data, select column #1, otherwise use values from 2-11</dd>
+			<dd>You can directly click on the matching colour box instead of typing a value.
+			<dt>4. Calibrate your palette!</dt>
+			<dd>Once all of the colours have been matched, hit <strong>"Calibrate"</strong>.  You will be returned to the palette view.</dd>
+			<dd>To opt out, just use the <strong>"Cancel"</strong> option.</dd>
+			<dt>5. Repeat to improve accuracy.</dt>
+			<dd>Repeat the process from step 2, until adjacent shades (below) for each pigment are close enough to the samples from step 1.</dd>
 		</dl>
 		
 		<formset>

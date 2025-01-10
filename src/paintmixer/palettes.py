@@ -244,7 +244,8 @@ class ProcessColour(grok.View):
         elif bn_reset:
             self.redirect(self.url(self.context.__parent__, name='', data=dict(reset=True)))
         else:
-            self.context.fromtext(palette)
+            if palette:
+                self.context.fromtext(palette)
             if bn_add:
                 current = len(self.context.colours)
                 self.context.add(CMYK(cyan, magenta, yellow, black, colourname))

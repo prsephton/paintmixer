@@ -38,7 +38,9 @@ class Index(grok.View):
     
     def update(self, palette=None, current=0, mixes=None, grams=10, palette_name='Default', 
                delta=0, target="", reset=False):
-        self.palette = self.context.palette if palette is None else Palette().fromtext(palette)
+        self.palette = Palette().fromtext(palette) if palette else self.context.palette
+        if not self.palette.colours:
+            self.palette = self.context.palette
         self.palette_name = palette_name
         self.current = int(current)
         self.grams = int(grams)

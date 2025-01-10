@@ -25,10 +25,10 @@
 		      <option value="Default">Default</option>
 	      </select>
 	      <label for="palette_name">Palette Name: </label><input type="text" name="palette_name" tal:attributes="value view.palette_name"/>
-	      <input type="submit" class="button" name="bn_save_palette" value="Save" />
-	      <input type="submit" class="button" name="bn_forget_palette" value="Forget" />
-	      <input type="button" class="button" id="bn_clear_palette" value="Clear" />
-	      <input type="submit" class="button" name="bn_calibrate" value="Calibrate" />
+	      <input type="submit" class="button" name="bn_save_palette" value="Save" title="Save the current palette locally" />
+	      <input type="submit" class="button" name="bn_forget_palette" value="Forget" title="Forget about this palette"/>
+	      <input type="button" class="button" id="bn_clear_palette" value="Clear" title="Restore the palette from last saved state"/>
+	      <input type="submit" class="button" name="bn_calibrate" value="Calibrate" title="Perform a calibration, using actual pigments (follow instructions)" />
 	  </fieldset>
       <fieldset>
 		  <label for="colour">Colour: </label><input type="color" name="colour" tal:attributes="value view.colour.to_rgb().hex()" />
@@ -39,15 +39,15 @@
 			  </div>
 		  </div>		  
 		  <br /><br />
-	      <label for="cyan">Cyan: </label><input class='cmykcolour' size="4" type="number" name="cyan" min="0" max="100" tal:attributes="value str(view.colour.cyan)" />
-	      <label for="magenta">Magenta: </label><input class='cmykcolour' size="4" type="number" name="magenta" min="0" max="100" tal:attributes="value str(view.colour.magenta)" />
-	      <label for="yellow">Yellow: </label><input class='cmykcolour' size="4" type="number" name="yellow" min="0" max="100" tal:attributes="value str(view.colour.yellow)" />
-	      <label for="black">Black: </label><input class='cmykcolour' size="4" type="number" name="black" min="0" max="100" tal:attributes="value str(view.colour.black)" />
+	      <label for="cyan">Cyan: </label><input class='cmykcolour' size="4" type="number" name="cyan" min="0" max="100" tal:attributes="value str(view.colour.cyan)" title="Cyan Component as a percentage" />
+	      <label for="magenta">Magenta: </label><input class='cmykcolour' size="4" type="number" name="magenta" min="0" max="100" tal:attributes="value str(view.colour.magenta)" title="Magenta Component as a percentage" />
+	      <label for="yellow">Yellow: </label><input class='cmykcolour' size="4" type="number" name="yellow" min="0" max="100" tal:attributes="value str(view.colour.yellow)" title="Yellow Component as a percentage" />
+	      <label for="black">Black: </label><input class='cmykcolour' size="4" type="number" name="black" min="0" max="100" tal:attributes="value str(view.colour.black)" title="Black Component as a percentage" />
 	      <br /><br />
-	      <input type="submit" class="button" name="bn_add" value="Add" />
-	      <input type="submit" class="button" name="bn_remove" value="Remove" />
-	      <input type="submit" class="button" name="bn_reset" value="Reset" />
-	      <input type="submit" class="button" name="bn_mix" value="Mix" />
+	      <input type="submit" class="button" name="bn_add" value="Add" title="Add the current colour to the palette" />
+	      <input type="submit" class="button" name="bn_remove" value="Remove" title="Remove the currently selected palette item" />
+	      <input type="submit" class="button" name="bn_reset" value="Reset" title="Reset the palette view to startup defaults" />
+	      <input type="submit" class="button" name="bn_mix" value="Mix" title="Produce mixing instructions for the current colour" />
       </fieldset>
   </form>
   

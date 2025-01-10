@@ -212,7 +212,9 @@ $(document).ready(function(){
     		palettes = JSON.parse(localStorage.getItem('palettes'));
     		palette = palettes[current]
     		if (palette)
-    			$("input[name='palette']").val(palette);    		
+    			$("input[name='palette']").val(palette);
+    		else
+    			$("input[name='palette']").val(null);
     	}
     	$("form[name='palette_form']").submit();		
     });
@@ -227,7 +229,9 @@ $(document).ready(function(){
     		palettes = JSON.parse(localStorage.getItem('palettes'));
     		palette = palettes[current]
     		if (palette)
-    			$("input[name='palette']").val(palette);    		
+    			$("input[name='palette']").val(palette);
+    		else
+    			$("input[name='palette']").val(null);    		    		
     	}
     	$("form[name='palette_form']").submit();
     });

@@ -139,8 +139,9 @@ to produce 10 grams of final mixture, with 80% white, 10% cyan and 10% magenta.
 
 In the reflective colour model, this means that 
 90% of incoming white light cyan wavelength will be reflected (80% white includes all colours including cyan + 10% cyan = 90%), and 
-the same for the magenta wavelength.  There is also an 80% reflection for all colours in the spectrum.  The resulting colur will be
-a lavender blue (R: 229, G: 229, B: 255 or #e5e5ff).
+the same for the magenta wavelength.  There is also an 80% reflection for all colours in the spectrum.  
+
+The resulting colur will be a lavender blue (R: 229, G: 229, B: 255 or #e5e5ff).
 
 Remember that this assumes equal pigment strengths, and that cyan and magenta pigments are the perfect primaries.  Nevertheless, it 
 should be plain that the program is producing the appropriate instructions, given these rather idealistic conditions.  Things 

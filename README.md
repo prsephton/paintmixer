@@ -48,13 +48,14 @@ the type of paint (eg. oils or acrylic) and so forth.  However, assuming your pa
 manufacturer, the chances are that you will be able to mix them to produce different colours, shades, tints, and so on.
 
 Purchased paints might have a name like "Cerulean blue", "Brick Red" or "Primrose Yellow".  These are named colours which have a 
-well known corresponding CMYK value.   Some paints though have weird names or 
+well known corresponding CMYK value.   Some paints though have weird names or may not look like what they say they should.
 
 A reasonable way of determining the actual colour of a given paint, is to paint a sample on a white sheet of paper, and after it is dry, take a 
 photograph with your phone.  Depending on lighting conditions, you should be able to use Google to match the colour.  You can ask Google what
 the RGB or CMYK values (or even the name) are of the paint.
 
-Another approach is to match the painted sample against a standard such as Pantone.  
+Another approach is to match the painted sample against a standard such as Pantone :tm:.  Pantone:tm: provide painted strips of various hues, 
+shades and tints to allow for visual matching of samples to known CMYK values.
 
 Once you have the CMYK (preferred) or RGB values for your paint, add it to the current palette by 
 	* for RGB, clicking the "Colour" box and entering the colour information or

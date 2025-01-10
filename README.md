@@ -31,7 +31,7 @@ First install the application (PaintMixer) with a chosen name (eg. "pm").  Then 
 The first time you access the program, you are presented with a default CMYK palette.  In the real world, such a palette is only 
 found in a colour lazer or inkjet printer, and rarely in paints.
 
-More commonly, one will have a set of paints, the basic palette being blue, yellow, red, while and black.  From this core set, it
+More commonly, one will have a set of paints, the basic palette being blue, yellow, red, white and black.  From this core set, it
 is well known that one might mix these to produce a variety of colours and shades.  Even though the variety is not exhaustive (there
 are certainly some that are not achievable) there are a great many combinations.
 
@@ -57,9 +57,9 @@ the RGB or CMYK values (or even the name) are of the paint.
 Another approach is to match the painted sample against a standard such as Pantone&trade;.  Pantone&trade; provide painted strips of various hues, 
 shades and tints to allow for visual matching of samples to known CMYK values.
 
-Once you have the CMYK (preferred) or RGB values for your paint, add it to the current palette by 
-	* for RGB, clicking the "Colour" box and entering the colour information or
-	* for CMYK, enter the values directly in the boxes provided
+Once you have the CMYK (preferred) or RGB values for your paint, add it to the current palette by:
+ * for RGB, clicking the "Colour" box and entering the colour information or
+ * for CMYK, enter the values directly in the boxes provided
 
 After the colour information is entered, give the colour a name, and click "Add" to add it to the palette.
 

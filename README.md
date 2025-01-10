@@ -1,6 +1,6 @@
 # PaintMixer
 
-**PaintMixer** starts with a palette of known paints, and attempts to match a target paint colour using a reflective colour model.
+**PaintMixer** starts with a palette of known paints, and provides mixing instructions for producing a target paint colour.
 
 ## Best Effort
 

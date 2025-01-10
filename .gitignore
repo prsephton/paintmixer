@@ -5,3 +5,7 @@
 /Pipfile.lock
 /runtime
 *.swp
+/__pycache__/
+*.py[cod]
+*$py.class
+

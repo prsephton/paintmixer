@@ -11,7 +11,7 @@ Furthermore, Paintmixer converts between emissive RGB colours for display and CM
 conversion does not always perfectly describe the pigment quantities in a typical paint mixture.
 
 It will sometimes be impossible to match a target colour from a given palette.  Typically, a basic palette contains red, blue 
-and yellow with black and white.  From such palettes it is impossible to reproduce pure primaries such as cyan or magenta.
+and yellow with black and white.  From such palettes it is not possible to reproduce pure primaries such as cyan or magenta.
 
 
 ## Running PaintMixer

@@ -95,7 +95,8 @@ With a defined palette selected, the program allows the selection of a target co
 to produce a set of mixing instructions (the "Mix" button).  The initial target weight is 10g of paint, but you can enter
  a different value, and the program will output an adjusted set of instructions.
 
-Note that the programn uses weight and not volume, as the density of your pigments may change as the paints evaporate.
+Note that the program uses weight and not volume to measure portions, as the density of your pigments may change as the paints 
+evaporate.
 
 #### An example.
 
@@ -135,13 +136,13 @@ Now add a value of 10% Magenta, and hit "Mix" again.  This time, the program pro
 
 The program is saying to first mix 1 gram of cyan and 1 gram of magenta.  Then mix those 2 grams with anothert 8 grams of white
 to produce 10 grams of final mixture, with 80% white, 10% cyan and 10% magenta.  In the reflective colour model, this means that 
-90% of incoming cyan wavelength will be reflected (80% white includes all colours including cyan + 10% cyan = 90%), and 
+90% of incoming white light cyan wavelength will be reflected (80% white includes all colours including cyan + 10% cyan = 90%), and 
 the same for the magenta wavelength.  There is also an 80% reflection for all colours in the spectrum.  The resulting colur will be
 a lavender blue (R: 229, G: 229, B: 255 or #e5e5ff).
 
-Remember that this assumes equal pigment strengths, and that cyan and magenta are the perfect primaries.  Nevertheless, it should be 
-plain that the program is producing the appropriate instructions, given these rather idealistic conditions.  Things become a lot
-more messy in the real world.
+Remember that this assumes equal pigment strengths, and that cyan and magenta pigments are the perfect primaries.  Nevertheless, it 
+should be plain that the program is producing the appropriate instructions, given these rather idealistic conditions.  Things 
+become a lot more messy in the real world.
 
 ## Features
 

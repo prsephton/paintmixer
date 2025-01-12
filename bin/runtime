@@ -61,14 +61,14 @@ if [ ! -d "var" -o ! -d "parts" ]; then
     docker cp gserver:/opt/gserver/extends-cache extends-cache 
     if [ ! -f "../setup.py" ]; then
         docker cp gserver:/opt/gserver/etc/setup.py.in $T && envsubst < $T > ../setup.py 
+	    rm $T    
     fi
-    rm $T    
     ln -s ../setup.py .
     
     if [ ! -f "../buildout.cfg" ]; then
         docker cp gserver:/opt/gserver/etc/buildout.cfg.in $T && envsubst < $T > ../buildout.cfg     
+	    rm $T    
     fi
-    rm $T    
     ln -s ../buildout.cfg .
     stop_container    
 elif [ ! -f "parts/etc/site.zcml" ]; then 

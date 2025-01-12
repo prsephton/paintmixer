@@ -3,9 +3,9 @@
 /.pydevproject
 /extends-cache/
 /Pipfile.lock
-/runtime
-*.swp
-/__pycache__/
-*.py[cod]
-*$py.class
-
+runtime/
+.swp
+__pycache__/
+.py[cod]
+$py.class
+.settings/
